@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Priya 💖</title>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Poppins", Arial, sans-serif;
+    background: linear-gradient(120deg, #ff9a9e, #fad0c4, #ffd1ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Floating hearts */
+  .heart {
+    position: absolute;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% {
+      transform: translateY(100vh) scale(0.5);
+      opacity: 0;
+    }
+    20% { opacity: 1; }
+    100% {
+      transform: translateY(-10vh) scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  /* Card */
+  .card {
+    background: rgba(255,255,255,0.95);
+    padding: 40px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    animation: popIn 1s ease;
+    z-index: 10;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  h1 {
+    color: #ff4d6d;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #444;
+    margin-bottom: 25px;
+  }
+
+  button {
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  button:hover {
+    transform: scale(1.1);
+  }
+
+  #yes {
+    background: #ff4d6d;
+    color: white;
+  }
+
+  #no {
+    position: absolute;
+    background: #ccc;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #777;
+    margin-top: 12px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+  <h1>Priya 💖</h1>
+  <p>Will you be my Valentine?</p>
+  <button id="yes">Yes 💕</button>
+  <div class="hint">Try clicking “No”… if you can 😏</div>
+</div>
+
+<button id="no">No 💔</button>
+
+<!-- Music -->
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f3f1c7db7.mp3">
+</audio>
+
+<script>
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const music = document.getElementById("music");
+
+  let level = 0;
+
+  const noTexts = [
+    "No 😐",
+    "WAIT—",
+    "HEY 😳",
+    "STOP",
+    "WHY 😭",
+    "I'M PANICKING",
+    "JUST CLICK YES",
+    "I GIVE UP 💀"
+  ];
+
+  /* No button chases cursor */
+  document.addEventListener("mousemove", (e) => {
+    const rect = noBtn.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    const distance = Math.sqrt(dx*dx + dy*dy);
+
+    if (distance < 130) {
+      level++;
+      const angle = Math.atan2(dy, dx);
+      let x = rect.left - Math.cos(angle) * 120;
+      let y = rect.top - Math.sin(angle) * 120;
+
+      x = Math.max(0, Math.min(window.innerWidth - rect.width, x));
+      y = Math.max(0, Math.min(window.innerHeight - rect.height, y));
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.textContent = noTexts[Math.min(level, noTexts.length - 1)];
+      noBtn.style.transform = `scale(${1 - level * 0.04})`;
+    }
+  });
+
+  /* YES click */
+  yesBtn.addEventListener("click", () => {
+    document.body.innerHTML = `
+      <div style="
+        height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction:column;
+        background:linear-gradient(120deg,#ff4d6d,#ffb3c1);
+        color:white;
+        text-align:center;
+        font-family:Poppins, Arial;
+        padding:20px;
+      ">
+        <h1>💖 YESSS PRIYA 💖</h1>
+        <p>
+          Valentine status: <b>CONFIRMED</b> ✅<br><br>
+          This moment deserved this photo 🌹
+        </p>
+
+        <img src="priya.jpg"
+          style="
+            width:280px;
+            max-width:90%;
+            border-radius:20px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.4);
+            animation: fadeIn 1.5s ease;
+          "
+        />
+      </div>
+
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      </style>
+    `;
+  });
+
+  /* Floating hearts */
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }, 300);
+
+  /* Music starts on first click */
+  document.addEventListener("click", () => {
+    music.play().catch(() => {});
+  }, { once: true });
+
+  /* Initial No button position */
+  noBtn.style.left = "60%";
+  noBtn.style.top = "65%";
+</script>
+
+</body>
+</html>
